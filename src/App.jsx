@@ -4,6 +4,8 @@ import Login from './pages/Login'
 import Signup from './pages/Signup'
 import Profile from './pages/Profile'
 import Feed from './pages/Feed'
+import Friends from './pages/Friends'
+import BackgroundSpotlight from './BackgroundSpotlight'
 
 export default function App() {
   const [session, setSession] = useState(null)
@@ -94,69 +96,164 @@ export default function App() {
   }
 
   if (checking) {
-    return <p>Checking your login...</p>
+    return (
+      <div className="loading-screen" role="status">
+        <img src="/logo.png" alt="Runora" width="56" height="56" />
+        <p>Checking your login...</p>
+        <span className="loading-line" aria-hidden="true" />
+      </div>
+    )
   }
 
   return (
-    <main>
-      <h1>Runora</h1>
+    <>
+      <BackgroundSpotlight />
+      <div className={session ? 'app-shell' : 'app-shell auth-shell'}>
+        <a className="skip-link" href="#main-content">Skip to content</a>
+        <header className="site-header">
+          <div className="brand">
+            <img src="/logo.png" alt="Runora logo" width="46" height="46" />
 
-      {authError && <p>{authError}</p>}
+            <div>
+              <p className="brand-name">Runora<span aria-hidden="true">.</span></p>
+              <p>Running, together.</p>
+            </div>
+          </div>
 
-      {session ? (
-        <>
-          <nav>
-            <button onClick={() => setPage('feed')}>
-              Feed
-            </button>
+          <nav className="site-nav" aria-label="Main navigation">
+            {session ? (
+              <>
+                <button
+                  aria-current={page === 'feed' ? 'page' : undefined}
+                  className={
+                    page === 'feed'
+                      ? 'nav-button active'
+                      : 'nav-button'
+                  }
+                  onClick={() => setPage('feed')}
+                >
+                  Feed
+                </button>
+                <button
+                  aria-current={page === 'friends' ? 'page' : undefined}
+                  className={
+                    page === 'friends'
+                      ? 'nav-button active'
+                      : 'nav-button'
+                  }
+                  onClick={() => setPage('friends')}
+                >
+                  Friends
+                </button>
+                <button
+                  aria-current={page === 'profile' ? 'page' : undefined}
+                  className={
+                    page === 'profile'
+                      ? 'nav-button active'
+                      : 'nav-button'
+                  }
+                  onClick={() => setPage('profile')}
+                >
+                  My profile
+                </button>
 
-            <button onClick={() => setPage('profile')}>
-              My profile
-            </button>
+                <button
+                  className="nav-button logout-button"
+                  onClick={handleLogout}
+                >
+                  Log out
+                </button>
+              </>
+            ) : (
+              <>
+                <button
+                  aria-current={page === 'login' ? 'page' : undefined}
+                  className={
+                    page === 'login'
+                      ? 'nav-button active'
+                      : 'nav-button'
+                  }
+                  onClick={() => setPage('login')}
+                >
+                  Log in
+                </button>
 
-            <button onClick={handleLogout}>
-              Log out
-            </button>
+                <button
+                  aria-current={page === 'signup' ? 'page' : undefined}
+                  className={
+                    page === 'signup'
+                      ? 'nav-button active'
+                      : 'nav-button'
+                  }
+                  onClick={() => setPage('signup')}
+                >
+                  Sign up
+                </button>
+              </>
+            )}
           </nav>
+        </header>
 
-          {page === 'feed' && (
-            <Feed token={session.access_token} />
-          )}
+        {authError && (
+          <p className="notice error-notice" role="alert">
+            {authError}
+          </p>
+        )}
 
-          {page === 'profile' && (
-            <Profile token={session.access_token} />
-          )}
-        </>
-      ) : (
-        <>
-          <nav>
-            <button onClick={() => setPage('login')}>
-              Log in
-            </button>
+        {session ? (
+          <main className="page-content" id="main-content" tabIndex={-1}>
+            {page === 'feed' && (
+              <Feed token={session.access_token} />
+            )}
 
-            <button onClick={() => setPage('signup')}>
-              Sign up
-            </button>
-          </nav>
+            {page === 'profile' && (
+              <Profile token={session.access_token} />
+            )}
 
-          {page === 'signup' ? (
-            <Signup />
-          ) : (
-            <>
-              <Login onLogin={handleLogin} />
+            {page === 'friends' && (
+              <Friends token={session.access_token} />
+            )}
+          </main>
+        ) : (
+          <main className="auth-layout" id="main-content" tabIndex={-1}>
+            <section className="auth-story" aria-labelledby="story-title">
+              <p className="eyebrow"><span className="accent-line" /> A COMMUNITY IN MOTION</p>
+              <h1 id="story-title">Every run.<br />A little<br /><em>further.</em></h1>
+              <p className="story-description">Find your people. Share your miles.<br />Make the everyday run mean more.</p>
+              <div className="story-bottom">
+                <span className="story-mark" aria-hidden="true">R<span>↗</span></span>
+                <p>YOUR PACE.<br /><strong>YOUR PEOPLE.</strong></p>
+              </div>
+            </section>
+            <div className="auth-card" key={page}>
+              <div className="auth-card-inner">
+                {page === 'signup' ? (
+                  <Signup />
+                ) : (
+                  <>
+                    <Login onLogin={handleLogin} />
 
-              <p>Or</p>
+                    <p className="auth-divider"><span>or continue with</span></p>
 
-              <button
-                type="button"
-                onClick={handleGoogleLogin}
-              >
-                Continue with Google
-              </button>
-            </>
-          )}
-        </>
-      )}
-    </main>
+                    <button
+                      className="google-button"
+                      type="button"
+                      onClick={handleGoogleLogin}
+                    >
+                      <span className="google-mark" aria-hidden="true">G</span>
+                      Continue with Google
+                    </button>
+                  </>
+                )}
+              </div>
+            </div>
+          </main>
+        )}
+        <footer className="site-footer">
+          <span>RUNORA <span className="footer-slash">/</span> RUNNING, TOGETHER.</span>
+          <span>ONE RUN AT A TIME <span aria-hidden="true">↗</span></span>
+        </footer>
+      </div>
+    </>
   )
 }

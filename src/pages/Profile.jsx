@@ -43,17 +43,37 @@ export default function Profile({ token }) {
     }, [token])
 
     return (
-        <section>
-            <h2>My profile</h2>
+        <section className="profile-page" aria-labelledby="profile-title">
+            <div className="page-heading">
+                <div>
+                    <p className="eyebrow"><span className="accent-line" /> YOUR CORNER OF RUNORA</p>
+                    <h1 id="profile-title">My profile<span className="accent-text">.</span></h1>
+                </div>
+                <p className="heading-note">Every runner has a story.<br />This is where yours begins.</p>
+            </div>
 
-            {loading && <p>Loading your profile...</p>}
+            {loading && <p className="notice loading-notice" role="status">Loading your profile...</p>}
 
-            {error && <p>{error}</p>}
+            {error && <p className="notice error-notice" role="alert">{error}</p>}
 
             {profile && (
-                <div>
-                    <p>Email: {profile.email}</p>
-                    <p>User ID: {profile.userId}</p>
+                <div className="profile-layout">
+                    <div className="profile-identity">
+                        <span className="profile-avatar" aria-hidden="true">{profile.email ? profile.email[0] : 'R'}</span>
+                        <p className="eyebrow">THE RUNNER BEHIND THE MILES</p>
+                        <h2>{profile.email ? profile.email.split('@')[0] : 'Your account'}</h2>
+                        <p className="profile-caption">Your pace. Your people.<br />Your place in the community.</p>
+                    </div>
+                    <div className="profile-card">
+                        <div className="profile-card-inner">
+                            <div className="section-heading"><h2>Account details</h2><span aria-hidden="true">↗</span></div>
+                            <p className="profile-caption">The identity connected to your Runora account.</p>
+                            <dl className="profile-details">
+                                <div><dt>Email</dt><dd>{profile.email}</dd></div>
+                                <div><dt>User ID</dt><dd className="profile-id">{profile.userId}</dd></div>
+                            </dl>
+                        </div>
+                    </div>
                 </div>
             )}
         </section>

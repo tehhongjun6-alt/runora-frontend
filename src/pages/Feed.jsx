@@ -148,108 +148,193 @@ export default function Feed({ token }) {
     }
 
     return (
-        <section>
-            <h2>Running feed</h2>
-
-            <form onSubmit={handleCreatePost}>
-                <h3>Share a running update</h3>
-
+        <section className="feed-page" aria-labelledby="feed-title">
+            <div className="page-heading">
                 <div>
-                    <label htmlFor="post-content">Your post</label>
-                    <textarea
-                        id="post-content"
-                        rows={4}
-                        value={content}
-                        disabled={submitting}
-                        onChange={(event) => setContent(event.target.value)}
-                    />
+                    <p className="eyebrow"><span className="accent-line" /> THE EVERYDAY RUN CLUB</p>
+                    <h1 id="feed-title">Running feed<span className="accent-text">.</span></h1>
                 </div>
+                <p className="heading-note">Good runs. Real stories.<br />A little further, together.</p>
+            </div>
 
-                <div>
-                    <label htmlFor="post-visibility">Who can see this?</label>
-                    <select
-                        id="post-visibility"
-                        value={visibility}
-                        disabled={submitting}
-                        onChange={(event) => setVisibility(event.target.value)}
-                    >
-                        <option value="public">Public</option>
-                        <option value="friends-only">Friends-only</option>
-                    </select>
-                </div>
-
-                <div>
-                    <p>Running photo — optional</p>
-                    <p>JPG, PNG or WebP. Maximum 2 MB.</p>
-
-                    {file ? (
-                        <div>
-                            <p>Selected: {file.name}</p>
-                            <button
-                                type="button"
-                                disabled={submitting}
-                                onClick={() => setFile(null)}
-                            >
-                                Remove image
-                            </button>
+            <div className="feed-layout">
+                <form
+                    className="post-composer"
+                    onSubmit={handleCreatePost}
+                    aria-busy={submitting}
+                >
+                    <div className="composer-inner">
+                        <div className="composer-heading">
+                            <span className="composer-plus" aria-hidden="true">+</span>
+                            <h2>Create a post</h2>
                         </div>
-                    ) : (
-                        <div>
-                            <label htmlFor="post-image">Choose an image</label>
-                            <input
-                                id="post-image"
-                                type="file"
-                                accept="image/jpeg,image/png,image/webp"
+
+                        <div className="form-group">
+                            <label htmlFor="post-content">
+                                Your update
+                            </label>
+
+                            <textarea
+                                id="post-content"
+                                rows={4}
+                                placeholder="A new route, a small win… how was your run?"
+                                value={content}
                                 disabled={submitting}
                                 onChange={(event) =>
-                                    setFile(event.target.files[0] || null)
+                                    setContent(event.target.value)
                                 }
                             />
                         </div>
+
+                        <div className="visibility-row">
+                            <label htmlFor="post-visibility">
+                                Visibility
+                            </label>
+
+                            <select
+                                id="post-visibility"
+                                value={visibility}
+                                disabled={submitting}
+                                onChange={(event) =>
+                                    setVisibility(event.target.value)
+                                }
+                            >
+                                <option value="public">Public</option>
+                                <option value="friends-only">
+                                    Friends-only
+                                </option>
+                            </select>
+                        </div>
+
+                        <div className="upload-panel">
+                            <label htmlFor={file ? undefined : 'post-image'}>
+                                Add a photo <span className="optional-label">Optional</span>
+                            </label>
+
+                            {file ? (
+                                <div>
+                                    <p className="selected-file">
+                                        {file.name}
+                                    </p>
+
+                                    <button
+                                        className="secondary-button"
+                                        type="button"
+                                        disabled={submitting}
+                                        onClick={() => setFile(null)}
+                                    >
+                                        Remove image
+                                    </button>
+                                </div>
+                            ) : (
+                                <input
+                                    className="file-input"
+                                    id="post-image"
+                                    aria-describedby="upload-help"
+                                    type="file"
+                                    accept="image/jpeg,image/png,image/webp"
+                                    disabled={submitting}
+                                    onChange={(event) =>
+                                        setFile(event.target.files[0] || null)
+                                    }
+                                />
+                            )}
+                            <p className="upload-help" id="upload-help">JPG / PNG / WebP · 2 MB max</p>
+                        </div>
+
+                        <button
+                            className="publish-button"
+                            type="submit"
+                            disabled={submitting}
+                        >
+                            {submitting ? 'Publishing...' : 'Publish post'}
+                            <span className="button-arrow" aria-hidden="true">↗</span>
+                        </button>
+
+                        {message && (
+                            <p className="notice" role="status">
+                                {message}
+                            </p>
+                        )}
+                    </div>
+                </form>
+
+                <div className="posts-list">
+                    <div className="feed-list-heading"><h2>From the community</h2><span className="list-marker" aria-hidden="true" /></div>
+                    {loading && (
+                        <p className="notice loading-notice" role="status">
+                            Loading posts...
+                        </p>
                     )}
-                </div>
 
-                <button type="submit" disabled={submitting}>
-                    {submitting ? 'Publishing...' : 'Publish post'}
-                </button>
-
-                {message && <p>{message}</p>}
-            </form>
-
-            <hr />
-
-            {loading && <p>Loading posts...</p>}
-            {error && <p>{error}</p>}
-
-            {!loading && !error && posts.length === 0 && (
-                <p>No posts yet.</p>
-            )}
-
-            {posts.map((post) => (
-                <div key={post.id}>
-                    <h3>{post.author}</h3>
-
-                    <p>
-                        {post.visibility === 'friends-only'
-                            ? 'Friends-only'
-                            : 'Public'}
-                    </p>
-
-                    <p>{post.content}</p>
-
-                    {/* 有图片地址才显示图片，旧文字帖子仍然正常显示 */}
-                    {post.image_url && (
-                        <img
-                            src={post.image_url}
-                            alt="Photo attached to the running post"
-                            style={{ maxWidth: '100%', height: 'auto' }}
-                        />
+                    {error && (
+                        <p className="notice error-notice" role="alert">
+                            {error}
+                        </p>
                     )}
 
-                    <p>Posted: {post.created_at}</p>
-                    <hr />
+                    {!loading && !error && posts.length === 0 && (
+                        <div className="empty-state">
+                            <span className="empty-mark" aria-hidden="true">↗</span>
+                            <h3>A fresh starting line.</h3>
+                            <p>No posts yet. Share your first running update.</p>
+                        </div>
+                    )}
+
+                    {posts.map((post) => (
+                        <article
+                            className="post-card"
+                            key={post.id}
+                        >
+                            <div className="post-card-inner">
+                                <div className="post-header">
+                                    <div className="post-author">
+                                        <span className="author-avatar" aria-hidden="true">
+                                            {post.author ? post.author[0] : 'R'}
+                                        </span>
+
+                                        <div className="author-details">
+                                            <h3>{post.author || 'Runner'}</h3>
+
+                                            <time className="post-date" dateTime={post.created_at}>
+                                                {new Date(
+                                                    post.created_at
+                                                ).toLocaleDateString()}
+                                            </time>
+                                        </div>
+                                    </div>
+
+                                    <span
+                                        className={
+                                            post.visibility === 'friends-only'
+                                                ? 'visibility-tag friends-tag'
+                                                : 'visibility-tag'
+                                        }
+                                    >
+                                        {post.visibility === 'friends-only'
+                                            ? 'Friends-only'
+                                            : 'Public'}
+                                    </span>
+                                </div>
+
+                                <p className="post-content">
+                                    {post.content}
+                                </p>
+
+                                {post.image_url && (
+                                    <img
+                                        className="post-image"
+                                        src={post.image_url}
+                                        alt="Photo attached to the running post"
+                                        loading="lazy"
+                                        decoding="async"
+                                    />
+                                )}
+                            </div>
+                        </article>
+                    ))}
                 </div>
-            ))}
+            </div>
         </section>
     )
 }

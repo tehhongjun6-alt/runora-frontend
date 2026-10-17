@@ -57,15 +57,21 @@ export default function Login({ onLogin }) {
     }
 
     return (
-        <section>
-            <h2>Log in to Runora</h2>
+        <section aria-labelledby="login-title">
+            <p className="eyebrow">BACK IN YOUR STRIDE</p>
+            <h2 id="login-title">Welcome back<span className="accent-text">.</span></h2>
+            <p className="auth-description">Your next run starts with your community.</p>
 
-            <form onSubmit={handleLogin}>
+            <form onSubmit={handleLogin} aria-busy={loading}>
                 <div>
                     <label htmlFor="email">Email</label>
                     <input
                         id="email"
                         type="email"
+                        autoComplete="email"
+                        placeholder="you@example.com"
+                        disabled={loading}
+                        aria-describedby={error ? 'login-error' : undefined}
                         value={email}
                         onChange={(event) => setEmail(event.target.value)}
                     />
@@ -76,16 +82,21 @@ export default function Login({ onLogin }) {
                     <input
                         id="password"
                         type="password"
+                        autoComplete="current-password"
+                        placeholder="Enter your password"
+                        disabled={loading}
+                        aria-describedby={error ? 'login-error' : undefined}
                         value={password}
                         onChange={(event) => setPassword(event.target.value)}
                     />
                 </div>
 
-                <button type="submit">
+                <button className="primary-button" type="submit" disabled={loading}>
                     {loading ? 'Logging in...' : 'Log in'}
+                    <span className="button-arrow" aria-hidden="true">↗</span>
                 </button>
 
-                {error && <p>{error}</p>}
+                {error && <p id="login-error" className="notice error-notice" role="alert">{error}</p>}
             </form>
         </section>
     )
