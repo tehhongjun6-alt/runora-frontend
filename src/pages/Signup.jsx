@@ -55,15 +55,20 @@ export default function Signup() {
     }
 
     return (
-        <section>
-            <h2>Create your Runora account</h2>
+        <section aria-labelledby="signup-title">
+            <p className="eyebrow">YOUR STARTING LINE</p>
+            <h2 id="signup-title">Find your stride<span className="accent-text">.</span></h2>
+            <p className="auth-description">Create your Runora account. All paces welcome.</p>
 
-            <form onSubmit={handleSignup}>
+            <form onSubmit={handleSignup} aria-busy={loading}>
                 <div>
                     <label htmlFor="signup-email">Email</label>
                     <input
                         id="signup-email"
                         type="email"
+                        autoComplete="email"
+                        placeholder="you@example.com"
+                        disabled={loading}
                         value={email}
                         onChange={(event) => setEmail(event.target.value)}
                     />
@@ -74,16 +79,20 @@ export default function Signup() {
                     <input
                         id="signup-password"
                         type="password"
+                        autoComplete="new-password"
+                        placeholder="Create a password"
+                        disabled={loading}
                         value={password}
                         onChange={(event) => setPassword(event.target.value)}
                     />
                 </div>
 
-                <button type="submit">
+                <button className="primary-button" type="submit" disabled={loading}>
                     {loading ? 'Creating account...' : 'Sign up'}
+                    <span className="button-arrow" aria-hidden="true">↗</span>
                 </button>
 
-                {message && <p>{message}</p>}
+                {message && <p className="notice" role="status">{message}</p>}
             </form>
         </section>
     )
