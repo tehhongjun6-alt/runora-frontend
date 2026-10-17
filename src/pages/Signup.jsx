@@ -1,0 +1,90 @@
+import { useState } from 'react'
+import { ENDPOINTS } from '../api'
+
+export default function Signup() {
+    const [email, setEmail] = useState('')
+    const [password, setPassword] = useState('')
+    const [message, setMessage] = useState('')
+    const [loading, setLoading] = useState(false)
+
+    async function handleSignup(event) {
+        event.preventDefault()
+
+        if (loading) {
+            return
+        }
+
+        setMessage('')
+
+        if (!email.trim() || !password) {
+            setMessage('Enter your email and password')
+            return
+        }
+
+        setLoading(true)
+
+        try {
+            // Ask the backend to create an account through Supabase Auth
+            const response = await fetch(ENDPOINTS.signup, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    email: email.trim(),
+                    password,
+                }),
+            })
+
+            const data = await response.json()
+
+            if (!response.ok) {
+                throw new Error(data.error || 'Signup failed')
+            }
+
+            // Registration does not automatically log the user in
+            setPassword('')
+            setMessage(
+                'Signup request accepted. Confirm your email if required, then log in.'
+            )
+        } catch (error) {
+            setMessage(error.message)
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    return (
+        <section>
+            <h2>Create your Runora account</h2>
+
+            <form onSubmit={handleSignup}>
+                <div>
+                    <label htmlFor="signup-email">Email</label>
+                    <input
+                        id="signup-email"
+                        type="email"
+                        value={email}
+                        onChange={(event) => setEmail(event.target.value)}
+                    />
+                </div>
+
+                <div>
+                    <label htmlFor="signup-password">Password</label>
+                    <input
+                        id="signup-password"
+                        type="password"
+                        value={password}
+                        onChange={(event) => setPassword(event.target.value)}
+                    />
+                </div>
+
+                <button type="submit">
+                    {loading ? 'Creating account...' : 'Sign up'}
+                </button>
+
+                {message && <p>{message}</p>}
+            </form>
+        </section>
+    )
+}
