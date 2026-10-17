@@ -48,7 +48,7 @@ export default function Login({ onLogin }) {
 
             // Pass the session to App so other pages can use it
             setPassword('')
-            onLogin(data.session)
+            await onLogin(data.session)
         } catch (error) {
             setError(error.message)
         } finally {
