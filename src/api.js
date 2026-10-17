@@ -1,5 +1,6 @@
-// Keep the backend address and routes in one place
+
 export const API_URL =
+    import.meta.env.VITE_API_URL ||
     'https://hibro-backend-production.up.railway.app'
 
 export const ENDPOINTS = {
